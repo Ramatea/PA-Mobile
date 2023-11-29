@@ -86,10 +86,6 @@ class _RegisPageState extends State<RegisPage> {
                         fontSize: 14, 
                       ),
                       decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                        ),
                         labelText: 'Name',
                         labelStyle: TextStyle(
                           fontSize: 15,
@@ -105,10 +101,6 @@ class _RegisPageState extends State<RegisPage> {
                         fontSize: 14, 
                       ),
                       decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.email,
-                          color: Colors.grey,
-                        ),
                         labelText: 'Gmail',
                         labelStyle: TextStyle(
                           fontSize: 15,
@@ -125,10 +117,6 @@ class _RegisPageState extends State<RegisPage> {
                       ),
                       obscureText: true,
                       decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
                         labelText: 'Password',
                         labelStyle: TextStyle(
                           fontSize: 15,
@@ -145,10 +133,6 @@ class _RegisPageState extends State<RegisPage> {
                       ),
                       obscureText: true,
                       decoration: const InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
                         labelText: 'Confirm Password',
                         labelStyle: TextStyle(
                           fontSize: 15,

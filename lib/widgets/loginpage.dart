@@ -17,8 +17,8 @@ class _LoginPageState extends State<LoginPage> {
     String gmail = gmailController.text;
     String pass = passwordController.text;
 
-    String userGmail = 'user@gmail.com';
-    String userPassword = '12345';
+    String userGmail = 'mobile@gmail.com';
+    String userPassword = 'mobile123';
 
     if (gmail == userGmail && pass == userPassword) {
       Navigator.pushReplacement(
