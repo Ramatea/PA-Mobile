@@ -92,6 +92,7 @@ class _Add_ScreenState extends State<Add_Screen> {
         var add = Add_data(
             selctedItemi!, amount_c.text, date, expalin_C.text, selctedItem!);
         box.add(add);
+        setState(() {});
         Navigator.of(context).pop();
       },
       child: Container(

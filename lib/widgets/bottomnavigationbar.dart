@@ -17,6 +17,58 @@ class _BottomState extends State<Bottom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   shadowColor: Colors.transparent,
+      //   backgroundColor: const Color.fromARGB(255, 82, 109, 130),
+      //   title: Center(
+      //     child: Padding(
+      //       padding: const EdgeInsets.only(top: 20, left : 15),
+      //       child: Text(
+      //         "WalletWhiz", // Judul AppBar
+      //         style: TextStyle(
+      //           color: Colors.white,
+      //           fontSize: 25,
+      //           fontWeight: FontWeight.bold,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      //   leading: GestureDetector(
+      //     onTap: () {
+      //       // Tambahkan fungsi yang diinginkan saat tombol profil di tekan
+      //     },
+      //     child: Padding(
+      //       padding: const EdgeInsets.only(top: 20, left : 15),
+      //       child: ClipOval(
+      //         child: Container(
+      //           color: Color.fromARGB(255, 221, 230, 237),
+      //           // padding: EdgeInsets.all(0),
+      //           child: Image.asset(
+      //             'images/profile.jpg',
+      //             height: 10,
+      //             width: 10,
+      //             fit: BoxFit.fill,
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      //   actions: [
+      //     GestureDetector(
+      //       onTap: () {
+      //         // Tambahkan fungsi yang diinginkan saat tombol pengaturan di tekan
+      //       },
+      //       child: Padding(
+      //         padding: const EdgeInsets.only(top: 20,right: 15),
+      //         child: Icon(
+      //           Icons.settings,
+      //           color: Colors.white,
+      //           size: 30,
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
       body: Screen[index_color],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
