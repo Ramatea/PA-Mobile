@@ -49,7 +49,7 @@ class _Add_ScreenState extends State<Add_Screen> {
           children: [
             background_container(context),
             Positioned(
-              top: 120,
+              top: 90,
               child: main_container(),
             ),
           ],
@@ -64,7 +64,7 @@ class _Add_ScreenState extends State<Add_Screen> {
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      height: 550,
+      height: 500,
       width: 340,
       child: Column(
         children: [
@@ -78,7 +78,7 @@ class _Add_ScreenState extends State<Add_Screen> {
           How(),
           SizedBox(height: 30),
           date_time(),
-          Spacer(),
+          SizedBox(height: 25),
           save(),
           SizedBox(height: 25),
         ],
@@ -101,8 +101,8 @@ class _Add_ScreenState extends State<Add_Screen> {
           borderRadius: BorderRadius.circular(15),
           color:const Color.fromARGB(255, 39, 55, 77),
         ),
-        width: 120,
-        height: 50,
+        width: 100,
+        height: 40,
         child: Text(
           'Save',
           style: TextStyle(

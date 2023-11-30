@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:managment/Screens/add.dart';
 import 'package:managment/Screens/introduction_page.dart';
 import 'package:managment/Screens/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -21,8 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: IntroductionPage(),
-      home: Bottom(),
+      home: IntroductionPage(),
     );
   }
 }
