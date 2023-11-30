@@ -92,8 +92,8 @@ class _Add_ScreenState extends State<Add_Screen> {
         var add = Add_data(
             selctedItemi!, amount_c.text, date, expalin_C.text, selctedItem!);
         box.add(add);
-        setState(() {});
         Navigator.of(context).pop();
+        setState(() {});
       },
       child: Container(
         alignment: Alignment.center,
@@ -320,7 +320,7 @@ class _Add_ScreenState extends State<Add_Screen> {
           width: double.infinity,
           height: 240,
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 39, 55, 77),
+            color: Color.fromARGB(255, 82, 109, 130),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20),
