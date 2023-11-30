@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:managment/widgets/auth.dart';
 import 'package:managment/widgets/bottomnavigationbar.dart';
 import 'package:managment/widgets/regisPage.dart';
 
@@ -10,56 +11,49 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final gmailController = TextEditingController();
-  final passwordController = TextEditingController();
+  bool _loading = false;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController gmailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  void _login(BuildContext context) {
-    String gmail = gmailController.text;
-    String pass = passwordController.text;
+  void handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    String userGmail = 'mobile@gmail.com';
-    String userPassword = 'mobile123';
+    String email = gmailController.value.text;
+    String password = passwordController.value.text;
 
-    if (gmail == userGmail && pass == userPassword) {
+    setState(() => _loading = true);
+
+    try {
+      await auth().login(email, password);
+
+      // Navigasi ke halaman beranda (gantilah `HomePage` dengan nama halaman yang sesuai)
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const Bottom(),
-        ),
+        MaterialPageRoute(builder: (context) => Bottom()),
       );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Login Failed'),
-            content:
-                const Text('Invalid Gmail or Password. Please try again...'),
-            backgroundColor:Color.fromARGB(255, 221, 230, 237),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'OK',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
+    } catch (e) {
+      // Handle login errors
+      print(e.toString());
+    } finally {
+      setState(() => _loading = false);
     }
   }
+
 
   void _regis(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegisPage()),
     );
+  }
+
+  bool isPasswordVisible = false;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      isPasswordVisible = !isPasswordVisible;
+    });
   }
 
   @override
@@ -80,104 +74,127 @@ class _LoginPageState extends State<LoginPage> {
                 width: 400,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 50, left: 30, right: 30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextField(
-                        controller: gmailController,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(
-                            Icons.email,
-                            color: Colors.grey,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      key: _formKey,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextFormField(
+                          controller: gmailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Silakan Masukkan Email Anda';
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            fontSize: 14,
                           ),
-                          labelText: 'Gmail',
-                          labelStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 39, 55, 77)
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                        decoration: const InputDecoration(
-                          suffixIcon: Icon(
-                            Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 39, 55, 77)
+                          decoration: const InputDecoration(
+                            suffixIcon: Icon(
+                              Icons.email,
+                              color: Colors.grey,
+                            ),
+                            labelText: 'Gmail',
+                            labelStyle: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 39, 55, 77),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                      ElevatedButton(
-                        onPressed: () {
-                          _login(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 39, 55, 77),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Silakan Masukkan Password Anda';
+                            }
+                            return null;
+                          },
+                          obscureText: !isPasswordVisible,
+                          style: const TextStyle(
+                            fontSize: 14,
                           ),
-                        ),
-                        child: Container(
-                          height: 40,
-                          width: 150,
-                          child: const Center(
-                            child: Text(
-                              'Sign In',
+                          decoration: InputDecoration(
+                            suffixIcon: GestureDetector(
+                              onTap: _togglePasswordVisibility,
+                              child: Icon(
+                                isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            label: const Text(
+                              'Password',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
                                 fontSize: 15,
-                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 223, 128, 144),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.center,
-                        child: GestureDetector(
-                          onTap: () {
-                            _regis(context);
+                        const SizedBox(height: 50),
+                        ElevatedButton(
+                          onPressed: () {
+                            handleSubmit();
                           },
-                          child: Column(
-                            children: [
-                              Text(
-                                "Don't have an account?",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                "Sign up",
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 39, 55, 77),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Container(
+                            height: 40,
+                            width: 150,
+                            child: const Center(
+                              child: Text(
+                                'Sign In',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      )
-                    ],
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.center,
+                          child: GestureDetector(
+                            onTap: () {
+                              _regis(context);
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Don't have an account?",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Text(
+                                  "Sign up",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

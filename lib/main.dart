@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:managment/Screens/add.dart';
 import 'package:managment/Screens/introduction_page.dart';
-import 'package:managment/Screens/home.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:managment/widgets/bottomnavigationbar.dart';
 
-
-import 'data/model/add_date.dart';
-
-void main() async {
-  await Hive.initFlutter();
-  Hive.registerAdapter(AdddataAdapter());
-  await Hive.openBox<Add_data>('data');
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Comment or remove the Firebase initialization line for now
+  // await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
