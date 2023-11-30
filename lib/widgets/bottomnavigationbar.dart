@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/add.dart';
 import 'package:managment/Screens/home.dart';
+import 'package:managment/Screens/profile.dart';
 import 'package:managment/Screens/statistics.dart';
 
 
@@ -77,6 +78,7 @@ class _BottomState extends State<Bottom> {
         },
         child: Icon(Icons.add),
         backgroundColor: Color.fromARGB(255, 39, 55, 77),
+
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
@@ -123,11 +125,24 @@ class _BottomState extends State<Bottom> {
                   color: index_color == 2 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
                 ),
               ),
+              // GestureDetector(
+              //   onTap: () {
+              //     setState(() {
+              //       index_color = 3;
+              //     });
+              //   },
+              //   child: Icon(
+              //     Icons.person_outlined,
+              //     size: 30,
+              //     color: index_color == 3 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
+              //   ),
+              // ),
               GestureDetector(
                 onTap: () {
-                  setState(() {
-                    index_color = 3;
-                  });
+                  // Pindah ke halaman profil
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+                  );
                 },
                 child: Icon(
                   Icons.person_outlined,
@@ -135,6 +150,7 @@ class _BottomState extends State<Bottom> {
                   color: index_color == 3 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
                 ),
               ),
+
             ],
           ),
         ),
