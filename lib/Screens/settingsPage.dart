@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:managment/widgets/loginpage.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -6,6 +7,37 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+
+  Future<void> _showSignOutDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Sign Out'),
+          content: Text('Yakin ingin keluar?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Lakukan sign-out dan kembali ke halaman login
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+              child: Text('Ya'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +118,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 // ),
               
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _showSignOutDialog(context);
+                },
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   shape: RoundedRectangleBorder(

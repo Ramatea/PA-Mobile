@@ -10,8 +10,9 @@ class auth {
         password: password,
       );
       await _auth.currentUser?.updateDisplayName(name);
+      print('Registration successful.');
     } catch (e) {
-      print(e.toString());
+      print('Error during registration: $e');
     }
   }
 
@@ -21,8 +22,9 @@ class auth {
         email: email,
         password: password,
       );
+      print('Login successful.');
     } catch (e) {
-      print(e.toString());
+      print('Error during login: $e');
     }
   }
 }
