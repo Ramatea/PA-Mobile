@@ -15,6 +15,7 @@ class _ChartState extends State<Chart> {
   List<Add_data>? a;
   bool b = true;
   bool j = true;
+
   @override
   Widget build(BuildContext context) {
     switch (widget.indexx) {
@@ -35,7 +36,6 @@ class _ChartState extends State<Chart> {
         break;
       case 3:
         a = year();
-
         j = false;
         break;
       default:

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/settingsPage.dart';
+import 'package:managment/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String username;
@@ -24,30 +26,8 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             // Menampilkan informasi profil
-//             Icon(
-//               Icons.account_circle,
-//               size: 100,
-//               color: Color.fromRGBO(99, 161, 208, 100),
-//             ),
-//             SizedBox(height: 20),
-//             Text(
-//               'Welcome, $username!', // Menampilkan nama pengguna
-//               style: TextStyle(
-//                 fontSize: 20,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-   }
- }
+  }
+}
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -56,8 +36,11 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   bool showPassword = false;
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -68,14 +51,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           },
           icon: Icon(
             Icons.arrow_back,
-            color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
+            color: themeProvider.textColor,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               Icons.settings,
-              color:const Color.fromARGB(255, 39, 55, 77),
+              color: themeProvider.textColor,
             ),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -94,7 +77,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             children: [
               Text(
                 "My Profile",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: themeProvider.textColor),
               ),
               SizedBox(
                 height: 15,
@@ -124,33 +107,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               ))),
                     ),
                     Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: 4,
+                            color: Theme.of(context).scaffoldBackgroundColor,
                           ),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                        )),
+                          color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
               SizedBox(
                 height: 35,
               ),
-              buildTextField("Username", "Joko", false),
-              buildTextField("E-mail", "mobile@gmail.com", false),
-              buildTextField("Password", "mobile123", true),
+              buildTextField("Username", "Joko", false, themeProvider),
+              buildTextField("E-mail", "mobile@gmail.com", false, themeProvider),
+              buildTextField("Password", "mobile123", true, themeProvider),
               SizedBox(
                 height: 35,
               ),
@@ -170,7 +154,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(
                         fontSize: 14,
                         letterSpacing: 2.2,
-                        color: Colors.black,
+                        color: themeProvider.textColor,
                       ),
                     ),
                   ),
@@ -202,7 +186,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget buildTextField(
-      String labelText, String placeholder, bool isPasswordTextField) {
+      String labelText, String placeholder, bool isPasswordTextField, ThemeProvider themeProvider) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextField(
@@ -210,16 +194,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         decoration: InputDecoration(
             suffixIcon: isPasswordTextField
                 ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: Colors.grey,
-                    ),
-                  )
+              onPressed: () {
+                setState(() {
+                  showPassword = !showPassword;
+                });
+              },
+              icon: Icon(
+                Icons.remove_red_eye,
+                color: Colors.grey,
+              ),
+            )
                 : null,
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,
@@ -228,7 +212,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             hintStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: themeProvider.textColor,
             )),
       ),
     );

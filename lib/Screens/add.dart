@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:managment/data/model/add_date.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:managment/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class Add_Screen extends StatefulWidget {
-  const Add_Screen({super.key});
+  const Add_Screen({Key? key});
 
   @override
   State<Add_Screen> createState() => _Add_ScreenState();
@@ -11,46 +13,41 @@ class Add_Screen extends StatefulWidget {
 
 class _Add_ScreenState extends State<Add_Screen> {
   final box = Hive.box<Add_data>('data');
-  DateTime date = new DateTime.now();
-  String? selctedItem;
-  String? selctedItemi;
-  final TextEditingController expalin_C = TextEditingController();
+  DateTime date = DateTime.now();
+  String? selectedItem;
+  String? selectedItemi;
+  final TextEditingController explainController = TextEditingController();
   FocusNode ex = FocusNode();
-  final TextEditingController amount_c = TextEditingController();
-  FocusNode amount_ = FocusNode();
-  final List<String> _item = [
-    'food',
-    "Transfer",
-    "Transportation",
-    "Education"
-  ];
-  final List<String> _itemei = [
-    'Income',
-    "Expand",
-  ];
+  final TextEditingController amountController = TextEditingController();
+  FocusNode amountFocus = FocusNode();
+  final List<String> items = ['food', 'Transfer', 'Transportation', 'Education'];
+  final List<String> itemsIncomeExpand = ['Income', 'Expand'];
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     ex.addListener(() {
       setState(() {});
     });
-    amount_.addListener(() {
+    amountFocus.addListener(() {
       setState(() {});
     });
   }
 
+  @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
         child: Stack(
-          alignment: AlignmentDirectional.center,
+          alignment: Alignment.center,
           children: [
-            background_container(context),
+            backgroundContainer(context, themeProvider),
             Positioned(
               top: 90,
-              child: main_container(),
+              child: mainContainer(),
             ),
           ],
         ),
@@ -58,7 +55,7 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Container main_container() {
+  Container mainContainer() {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -75,9 +72,9 @@ class _Add_ScreenState extends State<Add_Screen> {
           SizedBox(height: 30),
           amount(),
           SizedBox(height: 30),
-          How(),
+          how(),
           SizedBox(height: 30),
-          date_time(),
+          dateTime(),
           SizedBox(height: 25),
           save(),
           SizedBox(height: 25),
@@ -90,7 +87,12 @@ class _Add_ScreenState extends State<Add_Screen> {
     return GestureDetector(
       onTap: () {
         var add = Add_data(
-            selctedItemi!, amount_c.text, date, expalin_C.text, selctedItem!);
+          selectedItemi!,
+          amountController.text,
+          date,
+          explainController.text,
+          selectedItem!,
+        );
         box.add(add);
         Navigator.of(context).pop();
         setState(() {});
@@ -99,7 +101,7 @@ class _Add_ScreenState extends State<Add_Screen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color:const Color.fromARGB(255, 39, 55, 77),
+          color: const Color.fromARGB(255, 39, 55, 77),
         ),
         width: 100,
         height: 40,
@@ -116,23 +118,25 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Widget date_time() {
+  Widget dateTime() {
     return Container(
       alignment: Alignment.bottomLeft,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2, color: Color(0xffC5C5C5))),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(width: 2, color: Color(0xffC5C5C5)),
+      ),
       width: 300,
       child: TextButton(
         onPressed: () async {
           DateTime? newDate = await showDatePicker(
-              context: context,
-              initialDate: date,
-              firstDate: DateTime(2020),
-              lastDate: DateTime(2100));
-          if (newDate == Null) return;
+            context: context,
+            initialDate: date,
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2100),
+          );
+          if (newDate == null) return;
           setState(() {
-            date = newDate!;
+            date = newDate;
           });
         },
         child: Text(
@@ -146,7 +150,7 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Padding How() {
+  Padding how() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Container(
@@ -160,13 +164,13 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
         ),
         child: DropdownButton<String>(
-          value: selctedItemi,
+          value: selectedItemi,
           onChanged: ((value) {
             setState(() {
-              selctedItemi = value!;
+              selectedItemi = value!;
             });
           }),
-          items: _itemei
+          items: itemsIncomeExpand
               .map((e) => DropdownMenuItem(
                     child: Container(
                       alignment: Alignment.center,
@@ -182,7 +186,7 @@ class _Add_ScreenState extends State<Add_Screen> {
                     value: e,
                   ))
               .toList(),
-          selectedItemBuilder: (BuildContext context) => _itemei
+          selectedItemBuilder: (BuildContext context) => itemsIncomeExpand
               .map((e) => Row(
                     children: [Text(e)],
                   ))
@@ -207,18 +211,20 @@ class _Add_ScreenState extends State<Add_Screen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         keyboardType: TextInputType.number,
-        focusNode: amount_,
-        controller: amount_c,
+        focusNode: amountFocus,
+        controller: amountController,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           labelText: 'amount',
           labelStyle: TextStyle(fontSize: 17, color: Colors.grey.shade500),
           enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(width: 2, color: Color(0xffC5C5C5))),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(width: 2, color: Color(0xffC5C5C5)),
+          ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(width: 2, color: Color(0xff368983))),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(width: 2, color: Color(0xff368983)),
+          ),
         ),
       ),
     );
@@ -229,17 +235,19 @@ class _Add_ScreenState extends State<Add_Screen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         focusNode: ex,
-        controller: expalin_C,
+        controller: explainController,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           labelText: 'explain',
           labelStyle: TextStyle(fontSize: 17, color: Colors.grey.shade500),
           enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(width: 2, color: Color(0xffC5C5C5))),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(width: 2, color: Color(0xffC5C5C5)),
+          ),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(width: 2, color: Color(0xff368983))),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(width: 2, color: Color(0xff368983)),
+          ),
         ),
       ),
     );
@@ -259,13 +267,13 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
         ),
         child: DropdownButton<String>(
-          value: selctedItem,
+          value: selectedItem,
           onChanged: ((value) {
             setState(() {
-              selctedItem = value!;
+              selectedItem = value!;
             });
           }),
-          items: _item
+          items: items
               .map((e) => DropdownMenuItem(
                     child: Container(
                       alignment: Alignment.center,
@@ -273,7 +281,7 @@ class _Add_ScreenState extends State<Add_Screen> {
                         children: [
                           Container(
                             width: 40,
-                            child: Image.asset('images/${e}.png'),
+                            child: Image.asset('images/$e.png'),
                           ),
                           SizedBox(width: 10),
                           Text(
@@ -286,12 +294,12 @@ class _Add_ScreenState extends State<Add_Screen> {
                     value: e,
                   ))
               .toList(),
-          selectedItemBuilder: (BuildContext context) => _item
+          selectedItemBuilder: (BuildContext context) => items
               .map((e) => Row(
                     children: [
                       Container(
                         width: 42,
-                        child: Image.asset('images/${e}.png'),
+                        child: Image.asset('images/$e.png'),
                       ),
                       SizedBox(width: 5),
                       Text(e)
@@ -313,7 +321,7 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Column background_container(BuildContext context) {
+  Column backgroundContainer(BuildContext context, ThemeProvider themeProvider) {
     return Column(
       children: [
         Container(
@@ -344,13 +352,11 @@ class _Add_ScreenState extends State<Add_Screen> {
                     Text(
                       'Adding',
                       style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
-                  SizedBox(
-
-                  )
                   ],
                 ),
               )

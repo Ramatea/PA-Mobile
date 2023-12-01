@@ -18,7 +18,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => ThemeProvider(), // Tambahkan ini
+      child: const MyApp(),
+    ),
+  );
 }
 
 
