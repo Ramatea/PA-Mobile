@@ -17,36 +17,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    String email = gmailController.value.text;
-    String password = passwordController.value.text;
-
-    setState(() => _loading = true);
-
-    try {
-      await auth().login(email, password);
-
-      // Navigasi ke halaman beranda (gantilah `HomePage` dengan nama halaman yang sesuai)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Bottom()),
-      );
-    } catch (e) {
-      // Handle login errors
-      print(e.toString());
-    } finally {
-      setState(() => _loading = false);
+    if (_formKey.currentState!.validate()) {
+      String email = gmailController.text;
+      String password = passwordController.text;
+      
+      setState(() => _loading = true);
+      try {
+        await auth().login(email, password);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Bottom()),
+        );
+      } catch (e) {
+        print('Error during login: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed. Please try again.'),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        setState(() => _loading = false);
+      }
     }
   }
-
-
-  void _regis(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RegisPage()),
-    );
-  }
+  
 
   bool isPasswordVisible = false;
 
@@ -77,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      key: _formKey,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextFormField(
@@ -132,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 223, 128, 144),
+                                color: Color.fromARGB(255, 39, 55, 77),
                               ),
                             ),
                           ),
@@ -168,7 +163,10 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.center,
                           child: GestureDetector(
                             onTap: () {
-                              _regis(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => RegisPage()),
+                              );
                             },
                             child: Column(
                               children: [

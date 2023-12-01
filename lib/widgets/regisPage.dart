@@ -15,7 +15,7 @@ class _RegisPageState extends State<RegisPage> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final TextEditingController confirmPass = TextEditingController();
+  // final TextEditingController confirmPass = TextEditingController();
 
   String? nameError;
   String? emailError;
@@ -31,14 +31,13 @@ class _RegisPageState extends State<RegisPage> {
     });
   }
 
-  void _login(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
+  void _clearForm() {
+    name.clear();
+    email.clear();
+    password.clear();
   }
 
-  Future<void> handleSubmit() async {
+  void handleSubmit() async {
     clearErrors();
 
     if (!_formKey.currentState!.validate()) return;
@@ -48,16 +47,28 @@ class _RegisPageState extends State<RegisPage> {
     final pass = password.text;
 
     setState(() => _loading = true);
-
+    
     try {
       await auth().register(nama, mail, pass);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Data Berhasil Disimpan.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      _clearForm();
     } catch (e) {
       print(e.toString());
-    } finally {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan data. Silakan coba lagi.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }finally {
       setState(() => _loading = false);
     }
   }
-
   bool isPasswordVisible = false;
 
   void _togglePasswordVisibility() {
@@ -164,47 +175,9 @@ class _RegisPageState extends State<RegisPage> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 223, 128, 144),
+                                 color: Color.fromARGB(255, 39, 55, 77),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: confirmPass,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Silakan Confirmasi Password Anda';
-                            } else if (value != password.text) {
-                              return 'Password tidak sesuai';
-                            }
-                            return null;
-                          },
-                          onChanged: (_) => clearErrors(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                          obscureText: !isPasswordVisible,
-                          decoration: InputDecoration(
-                            suffixIcon: GestureDetector(
-                              onTap: _togglePasswordVisibility,
-                              child: Icon(
-                                isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            label: const Text(
-                              'Confirm Password',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 223, 128, 144),
-                              ),
-                            ),
-              
-                            errorText: confirmPassError,
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -238,7 +211,10 @@ class _RegisPageState extends State<RegisPage> {
                           alignment: Alignment.center,
                           child: GestureDetector(
                             onTap: () {
-                              _login(context);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => LoginPage()),
+                              );
                             },
                             child: const Column(
                               children: [
