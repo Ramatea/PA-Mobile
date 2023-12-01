@@ -48,7 +48,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return LoginPage(); 
+              return LoginPage();
             },
           ),
         );

@@ -363,3 +363,9 @@ class _HomeState extends State<Home> {
     );
   }
 }
+//  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+//             themeProvider.setThemeMode(
+//               themeProvider.themeMode == ThemeModeType.light
+//                   ? ThemeModeType.dark
+//                   : ThemeModeType.light,
+//             );
