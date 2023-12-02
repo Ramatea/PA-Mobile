@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
 import 'package:managment/data/utlity.dart';
 import 'package:managment/widgets/chart.dart';
 
 import '../data/model/add_date.dart';
-import '../data/top.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -46,8 +45,9 @@ class _StatisticsState extends State<Statistics> {
               Text(
                 'Statistics',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: const Color.fromARGB(255, 233, 231, 231),
                   fontSize: 20,
+                  
                   fontWeight: FontWeight.w700,
                 ),
               ),

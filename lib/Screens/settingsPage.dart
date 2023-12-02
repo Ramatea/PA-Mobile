@@ -14,7 +14,7 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Konfirmasi Sign Out'),
-          content: Text('Yakin ingin keluar?'),
+          content: Text('Anda Yakin ingin keluar?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -94,12 +94,14 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(
               height: 10,
             ),
-            buildAccountOptionRow(context, "Change password"),
-            buildAccountOptionRow(context, "Content settings"),
+            buildAccountOptionRow(context, "Edit profile"),
+
+            buildAccountOptionRow(context, "About Us"),
+            
             SizedBox(
               height: 40,
             ),
-            Container(
+            Container( 
               color: Color.fromARGB(255, 221, 230, 237),
               
               padding: EdgeInsets.all(8),

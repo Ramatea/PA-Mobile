@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:managment/Screens/history.dart';
 import 'package:managment/data/model/add_date.dart';
 import 'package:managment/data/utlity.dart';
 import 'package:managment/provider/theme_provider.dart';
@@ -43,7 +44,7 @@ class _HomeState extends State<Home> {
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30),
                     ),
-                    color: Color.fromARGB(255, 82, 109, 130)
+                    color: Color.fromARGB(255, 100, 127, 148)
                   ),
                   height: 200,
                   width: double.infinity,
@@ -105,7 +106,7 @@ class _HomeState extends State<Home> {
                             child: Icon(
                               Icons.dark_mode_outlined,
                               color: themeProvider.textColor,
-                              size: 30,
+                              size: 25,
                             ),
                           ),
                         ),
@@ -117,10 +118,10 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.only(top: 120, left: 20, right: 20),
                   child: Container(
                     width: 500,
-                    height: 150,
+                    height: 180,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
+                      color: Color.fromARGB(255, 31, 46, 66).withOpacity(0.5),
                     ),
                     margin: const EdgeInsets.symmetric(horizontal: 50),
                     child: Padding(
@@ -246,11 +247,19 @@ class _HomeState extends State<Home> {
                     'Transactions History',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 19,
+                      fontSize: 15,
                       color: themeProvider.textColor,
                     ),
                   ),
-                  Text(
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to the HistoryPage when "See all" is clicked
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HistoryPage()),
+                      );
+                    },
+                    child: Text(
                     'See all',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
@@ -258,7 +267,9 @@ class _HomeState extends State<Home> {
                       color: themeProvider.textColor,
                     ),
                   ),
+                  ),
                 ],
+              
               ),
             ),
             Container(

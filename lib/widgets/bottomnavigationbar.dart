@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/add.dart';
+import 'package:managment/Screens/history.dart';
 import 'package:managment/Screens/home.dart';
 import 'package:managment/Screens/profile.dart';
 import 'package:managment/Screens/statistics.dart';
@@ -77,7 +78,7 @@ class _BottomState extends State<Bottom> {
               .push(MaterialPageRoute(builder: (context) => Add_Screen()));
         },
         child: Icon(Icons.add),
-        backgroundColor: Color.fromARGB(255, 39, 55, 77),
+        backgroundColor: Color.fromARGB(255, 31, 46, 66),
 
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -115,9 +116,10 @@ class _BottomState extends State<Bottom> {
               SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
-                  setState(() {
-                    index_color = 2;
-                  });
+                  // Pindah ke halaman profil
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => HistoryPage()),
+                  );
                 },
                 child: Icon(
                   Icons.account_balance_wallet_outlined,

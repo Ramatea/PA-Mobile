@@ -33,16 +33,16 @@ class _IntroductionPageState extends State<IntroductionPage> {
       back: Icon(
         Icons.arrow_back_ios_new,
         size: 15,
-        color: Color.fromARGB(255, 39, 55, 77),
+        color: Color.fromARGB(255, 30, 43, 61),
       ),
       next: Icon(
         Icons.arrow_forward_ios,
         size: 15,
-        color: Color.fromARGB(255, 39, 55, 77),
+        color: Color.fromARGB(255, 34, 48, 68),
       ),
 
       
-      done: const Text("Get Started", style: TextStyle(fontWeight: FontWeight.w600, color: Color.fromARGB(255, 39, 55, 77),)),
+      done: const Text("Get Started", style: TextStyle(fontWeight: FontWeight.w600, color: Color.fromARGB(255, 36, 52, 73),)),
       onDone: () {
         Navigator.of(context).pop();
         Navigator.of(context).push(

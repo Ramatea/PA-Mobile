@@ -13,6 +13,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:const Color.fromARGB(255, 39, 55, 77),
         title: Text('Profile'),
         actions: [
           // Tombol untuk keluar dari profil
@@ -78,6 +79,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Text(
                 "My Profile",
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500, color: themeProvider.textColor),
+                
               ),
               SizedBox(
                 height: 15,
@@ -106,35 +108,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
                               ))),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 4,
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                          color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: 0,
+                    //   right: 0,
+                    //   child: Container(
+                    //     height: 40,
+                    //     width: 40,
+                    //     decoration: BoxDecoration(
+                    //       shape: BoxShape.circle,
+                    //       border: Border.all(
+                    //         width: 4,
+                    //         color: Theme.of(context).scaffoldBackgroundColor,
+                    //       ),
+                    //       color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
+                    //     ),
+                        // child: Icon(
+                        //   Icons.edit,
+                        //   color: Colors.white,
+                        // ),
+                      //),
+                   // ),
                   ],
                 ),
               ),
               SizedBox(
                 height: 35,
               ),
-              buildTextField("Username", "Joko", false, themeProvider),
-              buildTextField("E-mail", "mobile@gmail.com", false, themeProvider),
-              buildTextField("Password", "mobile123", true, themeProvider),
+              buildTextField("Username", "", false, themeProvider),
+              buildTextField("E-mail", "", false, themeProvider),
+              buildTextField("Password", "", true, themeProvider),
               SizedBox(
                 height: 35,
               ),
@@ -217,4 +219,5 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+  
 }

@@ -54,6 +54,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
+    Color textColor= brightness == Brightness.dark ? Colors.black : Colors.white;
+    
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 82, 109, 130),
       body: Stack(
@@ -83,8 +86,9 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
+                            color: textColor,
                           ),
                           decoration: const InputDecoration(
                             suffixIcon: Icon(
@@ -109,8 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                             return null;
                           },
                           obscureText: !isPasswordVisible,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
+                            color: textColor,
                           ),
                           decoration: InputDecoration(
                             suffixIcon: GestureDetector(
