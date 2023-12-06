@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:managment/Screens/history.dart';
-import 'package:managment/data/model/add_date.dart';
+import 'package:managment/Screens/historyPage.dart';
 import 'package:managment/data/model/manage.dart';
+import 'package:managment/data/utlity.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -262,7 +262,7 @@ class _HomeState extends State<Home> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HistoryPage()),
+                        MaterialPageRoute(builder: (context) => History()),
                       );
                     },
                     child: Text(

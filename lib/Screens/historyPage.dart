@@ -1,13 +1,17 @@
-// Import paket-paket yang diperlukan
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'detailHistory.dart'; // Import your DetailHistory page file
 
-// Halaman untuk menampilkan riwayat pesanan pengguna
-class History extends StatelessWidget {
+class History extends StatefulWidget {
+  @override
+  State<History> createState() => _HistoryState();
+}
+
+class _HistoryState extends State<History> {
   @override
   Widget build(BuildContext context) {
-    // Dapatkan informasi pengguna yang sedang login
     final User? user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
@@ -19,7 +23,7 @@ class History extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(user?.uid)
-            .collection('History')            
+            .collection('History')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -33,47 +37,43 @@ class History extends StatelessWidget {
           return ListView.builder(
             itemCount: historyDocs.length,
             itemBuilder: (context, index) {
-              var orderItem = historyDocs[index];
-              String orderId = orderItem.id;
-              Timestamp date = orderItem['date'] as Timestamp;
-              String amount = orderItem['amount'];
-              String category = orderItem['category'];
-              String explanation = orderItem['explanation'];
-              String itemType = orderItem['itemType'];                          
+              var historyItem = historyDocs[index];
+              String Id = historyItem.id;
+              Timestamp date = historyItem['date'] as Timestamp;
+              String amount = historyItem['amount'];
+              String category = historyItem['category'];
+              String explanation = historyItem['explanation'];
+              String itemType = historyItem['itemType'];
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
                   child: ListTile(
-                    title: Text('Histroy ID: $orderId'),                    
+                    leading: Container(
+                      width: 40,
+                      child: Image.asset('images/$itemType.png'),
+                    ),
+                    title: Text(category),
+                   subtitle: Text(
+                      DateFormat('dd MMMM yyyy').format(date.toDate()), 
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),// Format the date
+                    ),
                     onTap: () {
-                      // Menampilkan pop-up dengan detail lengkap pesanan
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Order Details'),
-                            content: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Date: ${date.toDate()}'),
-                                Text('Amount: $amount'),
-                                Text('Category: $category'),                                
-                                Text('Explanation: $explanation'),                                
-                                Text('itemType: $itemType'),                                
-                                Text(''),                                
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Close'),
-                              ),
-                            ],
-                          );
-                        },
+                      // Pass the relevant data to the DetailHistory page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => detailHistory(
+                            Id: Id,
+                            date: date.toDate(),
+                            amount: amount,
+                            category: category,
+                            explanation: explanation,
+                            itemType: itemType,
+                          ),
+                        ),
                       );
                     },
                   ),
