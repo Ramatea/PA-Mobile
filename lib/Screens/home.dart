@@ -1,39 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:managment/Screens/historyPage.dart';
 import 'package:managment/data/model/manage.dart';
-import 'package:managment/data/utlity.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'detailHistory.dart'; // Import your DetailHistory page file
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
   @override
-  State<Home> createState() => _HomeState();
+  State<Home> createState() => _HomeState(); // Fix the class name here
 }
 
 class _HomeState extends State<Home> {
-  late List<Add_data> history;
-
-  @override
-  void initState() {
-    super.initState();
-    history = [];
-  }
-
-  final List<String> day = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final User? user = FirebaseAuth.instance.currentUser;
+
     final themeProvider = Provider.of<ThemeProvider>(context);
     final dataManager = Provider.of<DataManage>(context); 
 
@@ -278,127 +262,105 @@ class _HomeState extends State<Home> {
               ),
             ),
             Container(
-              height: 140,
+              height: 250,
               margin: const EdgeInsets.symmetric(horizontal: 15),
-              child: ListView.builder(
-                itemCount: history.length,
-                itemBuilder: (context, index) {
-                  return getList(history[index], index);
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user?.uid)
+                    .collection('History')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Text('No history data available.'),
+                    );
+                  }
+
+                  List<DocumentSnapshot> historyDocs = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    itemCount: historyDocs.length,
+                    itemBuilder: (context, index) {
+                      var historyItem = historyDocs[index];
+                      String Id = historyItem.id;
+                      Timestamp date = historyItem['date'] as Timestamp;
+                      String amount = historyItem['amount'];
+                      String category = historyItem['category'];
+                      String explanation = historyItem['explanation'];
+                      String itemType = historyItem['itemType'];
+
+                      return Padding(
+                        key: ValueKey<String>(Id), // Use a unique key for each ListTile
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: ListTile(
+                            leading: Container(
+                              width: 40,
+                              child: Image.asset('images/$itemType.png'),
+                            ),
+                            title: Text(category),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  DateFormat('dd MMMM yyyy').format(date.toDate()),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Rp. $amount-',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    // Add any other widgets you want to include here
+                                  ],
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              // Pass the relevant data to the DetailHistory page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => detailHistory(
+                                    Id: Id,
+                                    date: date.toDate(),
+                                    amount: amount,
+                                    category: category,
+                                    explanation: explanation,
+                                    itemType: itemType,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
-              ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: 200,
-                    height: 105,
-                    margin:
-                        const EdgeInsets.only(top: 20, left: 30, right: 10, bottom: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'images/1.jpg',
-                        width: 200,
-                        height: 105,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 200,
-                    height: 105,
-                    margin: const EdgeInsets.only(top: 20, right: 10, bottom: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'images/2.jpg',
-                        width: 200,
-                        height: 105,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 200,
-                    height: 105,
-                    margin: const EdgeInsets.only(top: 20, right: 30, bottom: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'images/3.jpg',
-                        width: 200,
-                        height: 105,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  ListTile get(int index, Add_data history) {
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(5),
-        child: Image.asset('images/${history.name}.png', height: 40),
-      ),
-      title: Text(
-        history.name,
-        style: TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      ),
-      subtitle: Text(
-        '${day[history.datetime.weekday - 1]}  ${history.datetime.year}-${history.datetime.day}-${history.datetime.month}',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      ),
-      trailing: Text(
-        history.amount,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 17,
-          color: history.IN == 'Income' ? Colors.green : Colors.red,
-        ),
-      ),
-    );
-  }
-
-  Widget getList(Add_data history, int index) {
-    return Dismissible(
-      key: UniqueKey(),
-      onDismissed: (direction) {
-        // history.delete();
-        // setState(() {
-        //   history.delete();
-        // });
-      },
-      child: get(index, history),
     );
   }
 }
