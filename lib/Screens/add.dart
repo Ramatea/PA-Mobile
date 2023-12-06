@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:managment/data/model/add_date.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,27 +12,13 @@ class Add_Screen extends StatefulWidget {
 }
 
 class _Add_ScreenState extends State<Add_Screen> {
-  final box = Hive.box<Add_data>('data');
   DateTime date = DateTime.now();
   String? selectedItem;
   String? selectedItemi;
   final TextEditingController explainController = TextEditingController();
-  FocusNode ex = FocusNode();
   final TextEditingController amountController = TextEditingController();
-  FocusNode amountFocus = FocusNode();
   final List<String> items = ['food', 'Transfer', 'Transportation', 'Education'];
   final List<String> itemsIncomeExpand = ['Income', 'Expand'];
-
-  @override
-  void initState() {
-    super.initState();
-    ex.addListener(() {
-      setState(() {});
-    });
-    amountFocus.addListener(() {
-      setState(() {});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,17 +71,8 @@ class _Add_ScreenState extends State<Add_Screen> {
 
   GestureDetector save() {
     return GestureDetector(
-      onTap: () {
-        var add = Add_data(
-          selectedItemi!,
-          amountController.text,
-          date,
-          explainController.text,
-          selectedItem!,
-        );
-        box.add(add);
-        Navigator.of(context).pop();
-        setState(() {});
+      onTap: () async {
+        submitOrder();
       },
       child: Container(
         alignment: Alignment.center,
@@ -116,6 +93,83 @@ class _Add_ScreenState extends State<Add_Screen> {
         ),
       ),
     );
+  }
+
+  bool submitOrder() {
+    if (selectedItem == null || selectedItemi == null) {
+      return false;
+    }
+
+    String explainValue = explainController.text;
+    String amountValue = amountController.text;
+
+    Map<String, dynamic> data = {
+      'itemType': selectedItem!,
+      'amount': amountValue,
+      'date': Timestamp.fromDate(date),
+      'explanation': explainValue,
+      'category': selectedItemi!,
+    };
+
+    saveDataToFirebase(data);
+
+    return true;
+  }
+
+  void saveDataToFirebase(Map<String, dynamic> data) async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('History')
+          .add(data);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Data saved successfully!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  clear();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Failed to save data. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void clear() {
+    selectedItem = null;
+    selectedItemi = null;
+    explainController.clear();
+    amountController.clear();
+    setState(() {});
   }
 
   Widget dateTime() {
@@ -211,7 +265,6 @@ class _Add_ScreenState extends State<Add_Screen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         keyboardType: TextInputType.number,
-        focusNode: amountFocus,
         controller: amountController,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -223,7 +276,9 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(width: 2, color: Color(0xff368983)),
+            borderSide: BorderSide(width
+
+: 2, color: Color(0xff368983)),
           ),
         ),
       ),
@@ -234,7 +289,6 @@ class _Add_ScreenState extends State<Add_Screen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
-        focusNode: ex,
         controller: explainController,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),

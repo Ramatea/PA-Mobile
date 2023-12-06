@@ -27,30 +27,32 @@ class _IntroductionPageState extends State<IntroductionPage> {
   Widget build(BuildContext context) {
     return IntroductionScreen(
       key: introKey,
-      showBackButton: true,
+      // showBackButton: true,
       showNextButton: true,
+      showSkipButton: true,
 
-      back: Icon(
-        Icons.arrow_back_ios_new,
-        size: 15,
-        color: Color.fromARGB(255, 30, 43, 61),
-      ),
+      // back: Icon(
+      //   Icons.arrow_back_ios_new,
+      //   size: 15,
+      //   color: Color.fromARGB(255, 30, 43, 61),
+      // ),
+      skip: const Text("Skip", style: TextStyle(fontWeight: FontWeight.w600, color: Color.fromARGB(255, 36, 52, 73),)),
+      onSkip: (){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      },
       next: Icon(
         Icons.arrow_forward_ios,
         size: 15,
         color: Color.fromARGB(255, 34, 48, 68),
       ),
-
-      
       done: const Text("Get Started", style: TextStyle(fontWeight: FontWeight.w600, color: Color.fromARGB(255, 36, 52, 73),)),
       onDone: () {
-        Navigator.of(context).pop();
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return LoginPage();
-            },
-          ),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
         );
       },
       // Daftar halaman yang akan ditampilkan dalam halaman introduction

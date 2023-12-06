@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:managment/widgets/auth.dart';
+import 'package:managment/data/model/auth.dart';
 import 'package:managment/widgets/loginpage.dart';
 
 class RegisPage extends StatefulWidget {
@@ -11,65 +11,97 @@ class RegisPage extends StatefulWidget {
 
 class _RegisPageState extends State<RegisPage> {
   bool _loading = false;
+  bool isPasswordVisible = false;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController name = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  // final TextEditingController confirmPass = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _confPass = TextEditingController();
+  final auth _auth = auth();
 
-  String? nameError;
-  String? emailError;
-  String? passwordError;
-  String? confirmPassError;
-
-  void clearErrors() {
-    setState(() {
-      nameError = null;
-      emailError = null;
-      passwordError = null;
-      confirmPassError = null;
-    });
-  }
-
-  void _clearForm() {
-    name.clear();
-    email.clear();
-    password.clear();
-  }
-
-  void handleSubmit() async {
-    clearErrors();
-
+  handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final nama = name.text;
-    final mail = email.text;
-    final pass = password.text;
+    final name = _name.text;
+    final email = _email.text;
+    final password = _password.text;
+    final confPass = _confPass.text;
 
     setState(() => _loading = true);
-    
-    try {
-      await auth().register(nama, mail, pass);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data Berhasil Disimpan.'),
-          duration: const Duration(seconds: 3),
-        ),
+
+    if (password != confPass) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registrasi Gagal'),
+            content: const Text('Password dan Confirm Password tidak cocok.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
       );
-      _clearForm();
-    } catch (e) {
-      print(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal menyimpan data. Silakan coba lagi.'),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }finally {
       setState(() => _loading = false);
+      return;
     }
+    try {
+      await _auth.register(name, email, password, confPass);
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registrasi Berhasil'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(40), 
+            ),
+            content: const Text(
+                'Akun Anda telah berhasil terdaftar. Anda sekarang dapat masuk menggunakan kredensial Anda.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); 
+
+                  // Navigator.of(context).pushReplacement(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => LoginPage(),
+                  //   ),
+                  // );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registrasi Error'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    setState(() => _loading = false);
   }
-  bool isPasswordVisible = false;
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -91,25 +123,24 @@ class _RegisPageState extends State<RegisPage> {
                   borderRadius: BorderRadius.circular(40),
                   color: Color.fromARGB(255, 221, 230, 237),
                 ),
-                height: 600,
+                height: 650,
                 width: 400,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 50, left: 30, right: 30),
+                  padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         TextFormField(
-                          controller: name,
+                          controller: _name,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Silakan Masukkan Nama Anda';
+                              return 'Please Enter Your Name';
                             }
                             return null;
                           },
-                          onChanged: (_) => clearErrors(),
                           style: const TextStyle(
                             fontSize: 14,
                           ),
@@ -120,19 +151,17 @@ class _RegisPageState extends State<RegisPage> {
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 39, 55, 77),
                             ),
-                            errorText: nameError,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         TextFormField(
-                          controller: email,
+                          controller: _email,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Silakan Masukkan Email Anda';
+                              return 'Please Enter Your Email';
                             }
                             return null;
                           },
-                          onChanged: (_) => clearErrors(),
                           style: const TextStyle(
                             fontSize: 14,
                           ),
@@ -143,19 +172,17 @@ class _RegisPageState extends State<RegisPage> {
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 39, 55, 77),
                             ),
-                            errorText: emailError,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         TextFormField(
-                          controller: password,
+                          controller: _password,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Silakan Masukkan Password Anda';
+                              return 'Please Enter Your Password';
                             }
                             return null;
                           },
-                          onChanged: (_) => clearErrors(),
                           style: const TextStyle(
                             fontSize: 14,
                           ),
@@ -180,7 +207,40 @@ class _RegisPageState extends State<RegisPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _confPass,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Your Confirm Password';
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                          obscureText: !isPasswordVisible,
+                          decoration: InputDecoration(
+                            suffixIcon: GestureDetector(
+                              onTap: _togglePasswordVisibility,
+                              child: Icon(
+                                isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            label: const Text(
+                              'Confirm Password',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                 color: Color.fromARGB(255, 39, 55, 77),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
                             handleSubmit();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:managment/data/model/add_date.dart';
+// import 'package:managment/data/model/add_date.dart';
 import 'package:managment/data/utlity.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -20,22 +20,22 @@ class _ChartState extends State<Chart> {
   Widget build(BuildContext context) {
     switch (widget.indexx) {
       case 0:
-        a = today();
+        a = today() as List<Add_data>?;
         b = true;
         j = true;
         break;
       case 1:
-        a = week();
+        a = week() as List<Add_data>?;
         b = false;
         j = true;
         break;
       case 2:
-        a = month();
+        a = month() as List<Add_data>?;
         b = false;
         j = true;
         break;
       case 3:
-        a = year();
+        a = year() as List<Add_data>?;
         j = false;
         break;
       default:
@@ -52,19 +52,20 @@ class _ChartState extends State<Chart> {
             dataSource: <SalesData>[
               ...List.generate(time(a!, b ? true : false).length, (index) {
                 return SalesData(
-                    j
-                        ? b
-                            ? a![index].datetime.hour.toString()
-                            : a![index].datetime.day.toString()
-                        : a![index].datetime.month.toString(),
-                    b
-                        ? index > 0
-                            ? time(a!, true)[index] + time(a!, true)[index - 1]
-                            : time(a!, true)[index]
-                        : index > 0
-                            ? time(a!, false)[index] +
-                                time(a!, false)[index - 1]
-                            : time(a!, false)[index]);
+                  j
+                      ? b
+                          ? a![index].datetime.hour.toString()
+                          : a![index].datetime.day.toString()
+                      : a![index].datetime.month.toString(),
+                  b
+                      ? index > 0
+                          ? time(a!, true)[index] + time(a!, true)[index - 1]
+                          : time(a!, true)[index]
+                      : index > 0
+                          ? time(a!, false)[index] +
+                              time(a!, false)[index - 1]
+                          : time(a!, false)[index],
+                );
               })
             ],
             xValueMapper: (SalesData sales, _) => sales.year,

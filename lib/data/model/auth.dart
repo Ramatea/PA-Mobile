@@ -4,17 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 class auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> register(String email, String password, String confirmPass, String confPass) async {
+  Future<void> register(String name, String email, String password, String confPass) async {
     try {
-      if (password != confirmPass) {
-        throw 'Password dan confirm password tidak sesuai';
-      }
-
-      // Pemeriksaan jika ada yg regis dengan email admin
-      if (email.toLowerCase() == 'admin@gmail.com') {
-        throw 'Email sudah digunakan';
-      }
-
+  
       final regisUser = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -33,6 +25,7 @@ class auth {
             .doc(uidPengguna)
             .set({
           'email': email,
+          'nama': name,
         });
       } else {
         throw 'User registration failed';
@@ -55,3 +48,4 @@ class auth {
     );
   }
 }
+

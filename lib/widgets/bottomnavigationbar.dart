@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/add.dart';
-import 'package:managment/Screens/history.dart';
+import 'package:managment/Screens/historyPage.dart';
 import 'package:managment/Screens/home.dart';
 import 'package:managment/Screens/profile.dart';
 import 'package:managment/Screens/statistics.dart';
@@ -118,7 +118,7 @@ class _BottomState extends State<Bottom> {
                 onTap: () {
                   // Pindah ke halaman profil
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => HistoryPage()),
+                    MaterialPageRoute(builder: (context) => History()),
                   );
                 },
                 child: Icon(

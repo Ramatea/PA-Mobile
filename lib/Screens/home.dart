@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:managment/Screens/history.dart';
 import 'package:managment/data/model/add_date.dart';
-import 'package:managment/data/utlity.dart';
+import 'package:managment/data/model/manage.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,8 +14,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var history;
-  final box = Hive.box<Add_data>('data');
+  late List<Add_data> history;
+
+  @override
+  void initState() {
+    super.initState();
+    history = [];
+  }
+
   final List<String> day = [
     'Monday',
     'Tuesday',
@@ -29,6 +35,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final dataManager = Provider.of<DataManage>(context); 
 
     return Scaffold(
       backgroundColor: themeProvider.backgroundColor,
@@ -44,7 +51,7 @@ class _HomeState extends State<Home> {
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30),
                     ),
-                    color: Color.fromARGB(255, 100, 127, 148)
+                    color: Color.fromARGB(255, 100, 127, 148),
                   ),
                   height: 200,
                   width: double.infinity,
@@ -139,7 +146,7 @@ class _HomeState extends State<Home> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            '\Rp. ${total()}',
+                            '\Rp. ${dataManager.totalBalance()}',
                             style: TextStyle(
                               color: themeProvider.textColor,
                               fontSize: 14,
@@ -177,7 +184,7 @@ class _HomeState extends State<Home> {
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        '\Rp. ${income()}',
+                                        '\Rp. ${dataManager.totalIncome()}',
                                         style: TextStyle(
                                           color: themeProvider.textColor,
                                           fontSize: 12,
@@ -216,7 +223,7 @@ class _HomeState extends State<Home> {
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        '\Rp. ${expenses()}',
+                                        '\Rp. ${dataManager.totalExpend()}',
                                         style: TextStyle(
                                           color: themeProvider.textColor,
                                           fontSize: 12,
@@ -253,33 +260,30 @@ class _HomeState extends State<Home> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to the HistoryPage when "See all" is clicked
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => HistoryPage()),
                       );
                     },
                     child: Text(
-                    'See all',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: themeProvider.textColor,
+                      'See all',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: themeProvider.textColor,
+                      ),
                     ),
                   ),
-                  ),
                 ],
-              
               ),
             ),
             Container(
               height: 140,
               margin: const EdgeInsets.symmetric(horizontal: 15),
               child: ListView.builder(
-                itemCount: box.length,
+                itemCount: history.length,
                 itemBuilder: (context, index) {
-                  history = box.values.toList()[index];
-                  return getList(history, index);
+                  return getList(history[index], index);
                 },
               ),
             ),
@@ -389,8 +393,10 @@ class _HomeState extends State<Home> {
     return Dismissible(
       key: UniqueKey(),
       onDismissed: (direction) {
-        history.delete();
-        setState(() {});
+        // history.delete();
+        // setState(() {
+        //   history.delete();
+        // });
       },
       child: get(index, history),
     );
