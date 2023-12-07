@@ -1,10 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/add.dart';
-import 'package:managment/Screens/historyPage.dart';
 import 'package:managment/Screens/home.dart';
 import 'package:managment/Screens/profile.dart';
-import 'package:managment/Screens/statistics.dart';
-
 
 class Bottom extends StatefulWidget {
   const Bottom({Key? key}) : super(key: key);
@@ -15,72 +15,53 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   int index_color = 0;
-  List Screen = [Home(), Statistics(), Home(),];
+  List Screen = [Home(), EditProfilePage(),];
+
+
+  Stream<QuerySnapshot> fetchData(){
+    return FirebaseFirestore.instance
+      .collection('users')
+      .snapshots();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   shadowColor: Colors.transparent,
-      //   backgroundColor: const Color.fromARGB(255, 82, 109, 130),
-      //   title: Center(
-      //     child: Padding(
-      //       padding: const EdgeInsets.only(top: 20, left : 15),
-      //       child: Text(
-      //         "WalletWhiz", // Judul AppBar
-      //         style: TextStyle(
-      //           color: Colors.white,
-      //           fontSize: 25,
-      //           fontWeight: FontWeight.bold,
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      //   leading: GestureDetector(
-      //     onTap: () {
-      //       // Tambahkan fungsi yang diinginkan saat tombol profil di tekan
-      //     },
-      //     child: Padding(
-      //       padding: const EdgeInsets.only(top: 20, left : 15),
-      //       child: ClipOval(
-      //         child: Container(
-      //           color: Color.fromARGB(255, 221, 230, 237),
-      //           // padding: EdgeInsets.all(0),
-      //           child: Image.asset(
-      //             'images/profile.jpg',
-      //             height: 10,
-      //             width: 10,
-      //             fit: BoxFit.fill,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      //   actions: [
-      //     GestureDetector(
-      //       onTap: () {
-      //         // Tambahkan fungsi yang diinginkan saat tombol pengaturan di tekan
-      //       },
-      //       child: Padding(
-      //         padding: const EdgeInsets.only(top: 20,right: 15),
-      //         child: Icon(
-      //           Icons.settings,
-      //           color: Colors.white,
-      //           size: 30,
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
       body: Screen[index_color],
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: 
+      StreamBuilder<QuerySnapshot>(
+        stream: fetchData(), 
+        builder: (context, snapshot){
+          switch(snapshot.connectionState){
+            case ConnectionState.waiting:
+            return Center(child: CircularProgressIndicator(),);
+            default :
+            if(snapshot.hasError){
+              return Text('Error saat membaca data');
+            }else{
+              if(snapshot.data!.docs.length == 0){
+                return Text('Data Masih Kosong');
+              }else{
+                int index = 0;
+                int panjang = snapshot.data!.docs.length;
+                var id = FirebaseAuth.instance.currentUser!.uid;
+                for(int i = 0; i < panjang; i++){
+                  if(snapshot.data!.docs[i].id == id){
+                    index = i;
+                  }
+                }
+                return FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => Add_Screen()));
+              .push(MaterialPageRoute(builder: (context) => Add_Screen(balance: snapshot.data?.docs[index]['balance'],expenses: snapshot.data?.docs[index]['expenses'],income: snapshot.data?.docs[index]['income'],)));
         },
         child: Icon(Icons.add),
         backgroundColor: Color.fromARGB(255, 31, 46, 66),
 
-      ),
+      );
+              }
+            }
+          }
+        }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
@@ -101,6 +82,7 @@ class _BottomState extends State<Bottom> {
                   color: index_color == 0 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
                 ),
               ),
+              SizedBox(width: 5),
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -108,51 +90,11 @@ class _BottomState extends State<Bottom> {
                   });
                 },
                 child: Icon(
-                  Icons.bar_chart_outlined,
-                  size: 30,
-                  color: index_color == 1 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
-                ),
-              ),
-              SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  // Pindah ke halaman profil
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => History()),
-                  );
-                },
-                child: Icon(
-                  Icons.account_balance_wallet_outlined,
-                  size: 30,
-                  color: index_color == 2 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
-                ),
-              ),
-              // GestureDetector(
-              //   onTap: () {
-              //     setState(() {
-              //       index_color = 3;
-              //     });
-              //   },
-              //   child: Icon(
-              //     Icons.person_outlined,
-              //     size: 30,
-              //     color: index_color == 3 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
-              //   ),
-              // ),
-              GestureDetector(
-                onTap: () {
-                  // Pindah ke halaman profil
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => EditProfilePage()),
-                  );
-                },
-                child: Icon(
                   Icons.person_outlined,
                   size: 30,
                   color: index_color == 3 ? Color.fromARGB(255, 39, 55, 77) : Colors.grey,
                 ),
               ),
-
             ],
           ),
         ),

@@ -1,33 +1,66 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:managment/Screens/historyPage.dart';
-import 'package:managment/data/model/manage.dart';
+
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'detailHistory.dart'; // Import your DetailHistory page file
+import 'detailHistory.dart'; 
 
 class Home extends StatefulWidget {
   @override
-  State<Home> createState() => _HomeState(); // Fix the class name here
+  State<Home> createState() => _HomeState(); 
 }
 
 class _HomeState extends State<Home> {
+  var idUser = FirebaseAuth.instance.currentUser!.uid;
+  
+  Stream<QuerySnapshot> readData(){
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    return db.collection('users')
+        .snapshots();
+        
+  }
+
   @override
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
-
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final dataManager = Provider.of<DataManage>(context); 
+    var tinggi = MediaQuery.of(context).size.height;
+    var lebar = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: themeProvider.backgroundColor,
-      body: SingleChildScrollView(
+      body: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
+            StreamBuilder<QuerySnapshot>(
+              stream: readData(), 
+              builder: (context, snapshot){
+                switch(snapshot.connectionState){
+                  case ConnectionState.waiting:
+                  return Center(child: CircularProgressIndicator(),);
+                  default :
+                    if(snapshot.hasError){
+                       return Center(
+                         child:Text('Error while reading data!'),
+                       );
+                    } else {
+                      if(snapshot.data?.docs.length == 0){
+                        return Center(
+                          child:Text('No history data available!',),
+                        );
+                    }else{
+                      int panjang = snapshot.data!.docs.length;
+                      int index = 0;
+                      for(int i = 0;i < panjang;i++){
+                        if(snapshot.data!.docs[i].id == idUser){
+                          index = i;
+                        }
+                      }return Stack(
               children: [
                 Container(
                   decoration: BoxDecoration(
@@ -37,8 +70,8 @@ class _HomeState extends State<Home> {
                     ),
                     color: Color.fromARGB(255, 100, 127, 148),
                   ),
-                  height: 200,
-                  width: double.infinity,
+                  height: tinggi * 0.32,
+                  width: lebar,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40, left: 30),
                     child: Row(
@@ -64,17 +97,17 @@ class _HomeState extends State<Home> {
                             children: [
                               Text(
                                 'Welcome,',
-                                style: TextStyle(
+                                style: GoogleFonts.daiBannaSil(
                                   color: themeProvider.textColor,
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               Text(
-                                'user!',
-                                style: TextStyle(
+                                snapshot.data?.docs[index]['nama'],
+                                style: GoogleFonts.daiBannaSil(
                                   color: themeProvider.textColor,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -108,21 +141,21 @@ class _HomeState extends State<Home> {
                 Padding(
                   padding: const EdgeInsets.only(top: 120, left: 20, right: 20),
                   child: Container(
-                    width: 500,
-                    height: 180,
+                      height: tinggi * 0.25,
+                      width: lebar,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Color.fromARGB(255, 31, 46, 66).withOpacity(0.5),
                     ),
                     margin: const EdgeInsets.symmetric(horizontal: 50),
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 15, left: 20, right: 20),
+                      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Total Balance',
-                            style: TextStyle(
+                            style: GoogleFonts.roboto(
                               color: themeProvider.textColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -130,14 +163,14 @@ class _HomeState extends State<Home> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            '\Rp. ${dataManager.totalBalance()}',
+                            '\Rp. ${snapshot.data?.docs[index]['balance']}',
                             style: TextStyle(
                               color: themeProvider.textColor,
                               fontSize: 14,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 35),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -168,7 +201,7 @@ class _HomeState extends State<Home> {
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        '\Rp. ${dataManager.totalIncome()}',
+                                        '\Rp. ${snapshot.data?.docs[index]['income']}',
                                         style: TextStyle(
                                           color: themeProvider.textColor,
                                           fontSize: 12,
@@ -207,7 +240,7 @@ class _HomeState extends State<Home> {
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        '\Rp. ${dataManager.totalExpend()}',
+                                        '\Rp. ${snapshot.data?.docs[index]['expenses']}',
                                         style: TextStyle(
                                           color: themeProvider.textColor,
                                           fontSize: 12,
@@ -227,9 +260,13 @@ class _HomeState extends State<Home> {
                   ),
                 )
               ],
-            ),
+            );
+                    }
+                  }
+                }
+              }),
             Padding(
-              padding: const EdgeInsets.only(top: 10, left: 30, right: 30),
+              padding: const EdgeInsets.only(top: 25, left: 30, right: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,8 +298,10 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
+            SizedBox(height: 10),
             Container(
-              height: 250,
+              height: tinggi * 0.25,
+              width: lebar,
               margin: const EdgeInsets.symmetric(horizontal: 15),
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -302,7 +341,7 @@ class _HomeState extends State<Home> {
 
                       return Padding(
                         key: ValueKey<String>(Id), // Use a unique key for each ListTile
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Card(
                           child: ListTile(
                             leading: Container(
@@ -311,31 +350,36 @@ class _HomeState extends State<Home> {
                             ),
                             title: Text(category),
                             subtitle: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  DateFormat('dd MMMM yyyy').format(date.toDate()),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Rp. $amount-',
+                                      DateFormat('dd MMMM yyyy').format(date.toDate()), 
                                       style: TextStyle(
                                         fontSize: 12,
+                                        color: Colors.black,
                                       ),
                                     ),
-                                    // Add any other widgets you want to include here
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          '${category == 'Income' ? '+' : '-'} Rp. $amount',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: category == 'Income' ? Colors.green : Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
                             onTap: () {
-                              // Pass the relevant data to the DetailHistory page
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

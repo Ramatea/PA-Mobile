@@ -27,15 +27,8 @@ class _IntroductionPageState extends State<IntroductionPage> {
   Widget build(BuildContext context) {
     return IntroductionScreen(
       key: introKey,
-      // showBackButton: true,
       showNextButton: true,
       showSkipButton: true,
-
-      // back: Icon(
-      //   Icons.arrow_back_ios_new,
-      //   size: 15,
-      //   color: Color.fromARGB(255, 30, 43, 61),
-      // ),
       skip: const Text("Skip", style: TextStyle(fontWeight: FontWeight.w600, color: Color.fromARGB(255, 36, 52, 73),)),
       onSkip: (){
         Navigator.pushReplacement(

@@ -27,9 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      // Cek login user
       await _auth.login(email, password);
-      // Navigasi ke Page User
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Bottom()),

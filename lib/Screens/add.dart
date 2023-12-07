@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class Add_Screen extends StatefulWidget {
-  const Add_Screen({Key? key});
+  final balance, expenses, income;
+  const Add_Screen({Key? key, required this.balance, required this.expenses, required this.income});
 
   @override
-  State<Add_Screen> createState() => _Add_ScreenState();
+  State<Add_Screen> createState() => _AddScreenState();
 }
 
-class _Add_ScreenState extends State<Add_Screen> {
+class _AddScreenState extends State<Add_Screen> {
   DateTime date = DateTime.now();
   String? selectedItem;
   String? selectedItemi;
@@ -25,15 +27,28 @@ class _Add_ScreenState extends State<Add_Screen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: themeProvider.textColor,
+          ),
+        ),
+        backgroundColor: Color.fromARGB(255, 100, 127, 148),
+        shadowColor: Colors.transparent,
+      ),
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
         child: Stack(
           alignment: Alignment.center,
           children: [
-            backgroundContainer(context, themeProvider),
+            _buildBackgroundContainer(context, themeProvider),
             Positioned(
-              top: 90,
-              child: mainContainer(),
+              top: 50,
+              child: _buildMainContainer(),
             ),
           ],
         ),
@@ -41,13 +56,15 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Container mainContainer() {
+  Container _buildMainContainer() {
+    var tinggi = MediaQuery.of(context).size.height;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),
-      height: 500,
+      height: tinggi * 0.80,
       width: 340,
       child: Column(
         children: [
@@ -72,7 +89,7 @@ class _Add_ScreenState extends State<Add_Screen> {
   GestureDetector save() {
     return GestureDetector(
       onTap: () async {
-        submitOrder();
+        _submitOrder();
       },
       child: Container(
         alignment: Alignment.center,
@@ -95,73 +112,151 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  bool submitOrder() {
-    if (selectedItem == null || selectedItemi == null) {
+  bool _submitOrder() {
+    try {
+      String explainValue = explainController.text;
+      String amountValue = amountController.text;
+      double totalBalance = 0;
+
+      if (selectedItem == null && amountValue.isEmpty && explainValue.isEmpty && selectedItemi == null) {
+        _showErrorDialog('kosong');
+        return false;
+      }
+
+      if (selectedItem == null || selectedItemi == null) {
+        _showErrorDialog('Please select menu');
+        return false;
+      }
+
+      if (totalBalance <= 0 && selectedItemi == 'Expense') {
+        _showErrorDialog('You cannot incur expenses when the total balance is 0!');
+        return false;
+      }
+
+      if (amountValue.isEmpty) {
+        _showErrorDialog('Please enter a valid amount!');
+        return false;
+      }
+
+      if (explainValue.isEmpty || explainValue.length > 50) {
+        _showErrorDialog('Please enter a valid explanation (max 50 characters)!');
+        return false;
+      }
+
+      Map<String, dynamic> data = {
+        'itemType': selectedItem!,
+        'amount': amountValue,
+        'date': Timestamp.fromDate(date),
+        'explanation': explainValue,
+        'category': selectedItemi!,
+      };
+
+      if (selectedItemi! == 'Expand') {
+        int amount = int.parse(amountValue);
+        if (widget.balance - amount < 0) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Your balance is not enough!'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          _saveDataToFirebase(data);
+          _updateFields(selectedItemi!, amount);
+        }
+      } else {
+        _saveDataToFirebase(data);
+        _updateFields(selectedItemi!, int.parse(amountValue));
+      }
+      return true;
+    } catch (e) {
+      _showErrorDialog('An error occurred. Please try again!');
       return false;
     }
-
-    String explainValue = explainController.text;
-    String amountValue = amountController.text;
-
-    Map<String, dynamic> data = {
-      'itemType': selectedItem!,
-      'amount': amountValue,
-      'date': Timestamp.fromDate(date),
-      'explanation': explainValue,
-      'category': selectedItemi!,
-    };
-
-    saveDataToFirebase(data);
-
-    return true;
   }
 
-  void saveDataToFirebase(Map<String, dynamic> data) async {
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('ERROR'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _saveDataToFirebase(Map<String, dynamic> data) async {
     try {
       String uid = FirebaseAuth.instance.currentUser!.uid;
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('History')
-          .add(data);
+      await FirebaseFirestore.instance.collection('users').doc(uid).collection('History').add(data);
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Data saved successfully!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  clear();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showSuccessDialog('Data saved successfully!');
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to save data. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showErrorDialog('Failed to save data. Please try again.');
     }
+  }
+
+  void _updateFields(String category, int value) {
+    var id = FirebaseAuth.instance.currentUser!.uid;
+    int saldo = widget.balance;
+    int newExp = widget.expenses;
+    int newInc = widget.income;
+    if (category == 'Expand') {
+      saldo = widget.balance - value;
+      newExp = newExp + value;
+    } else {
+      saldo = widget.balance + value;
+      newInc = newInc + value;
+    }
+    final data = {
+      "balance": saldo,
+      "expenses": newExp,
+      "income": newInc,
+    };
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection('users').doc(id).update(data).then((DocumentSnapshot) => print('Berhasil dengan id : $id'));
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                clear();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void clear() {
@@ -263,8 +358,11 @@ class _Add_ScreenState extends State<Add_Screen> {
   Padding amount() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextField(
-        keyboardType: TextInputType.number,
+      child: TextFormField(
+        keyboardType: const TextInputType.numberWithOptions(
+        decimal: false, signed: false),
+        inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,],
         controller: amountController,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -276,9 +374,7 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(width
-
-: 2, color: Color(0xff368983)),
+            borderSide: BorderSide(width: 2, color: const Color.fromARGB(255, 39, 55, 77),),
           ),
         ),
       ),
@@ -300,7 +396,7 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(width: 2, color: Color(0xff368983)),
+            borderSide: BorderSide(width: 2, color: const Color.fromARGB(255, 39, 55, 77),),
           ),
         ),
       ),
@@ -375,14 +471,18 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Column backgroundContainer(BuildContext context, ThemeProvider themeProvider) {
+  Column _buildBackgroundContainer(BuildContext context, ThemeProvider themeProvider) {
+    var tinggi = MediaQuery.of(context).size.height;
+    var lebar = MediaQuery.of(context).size.width;
+
+
     return Column(
       children: [
         Container(
-          width: double.infinity,
-          height: 240,
+          width: lebar,
+          height: tinggi * 0.25,
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 82, 109, 130),
+            color: Color.fromARGB(255, 100, 127, 148),
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20),
@@ -390,30 +490,17 @@ class _Add_ScreenState extends State<Add_Screen> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 40),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                    Text(
-                      'Adding',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Adding',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),

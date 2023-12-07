@@ -18,13 +18,12 @@ class _SettingsPageState extends State<SettingsPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
+                Navigator.of(context).pop(); 
               },
               child: Text('Batal'),
             ),
             TextButton(
               onPressed: () {
-                // Lakukan sign-out dan kembali ke halaman login
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
@@ -103,44 +102,32 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             Container( 
               color: Color.fromARGB(255, 221, 230, 237),
-              
               padding: EdgeInsets.all(8),
               child: Row(
-              children: [
-                // Icon(
-                //   Icons.volume_up_outlined,
-                //   color: const Color.fromARGB(255, 39, 55, 77).withOpacity(0.5),
-                // ),
-                // SizedBox(
-                //   width: 8,
-                // ),
-                // Text(
-                //   "Notifications",
-                //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                // ),
-              
-              OutlinedButton(
-                onPressed: () {
-                  _showSignOutDialog(context);
-                },
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      _showSignOutDialog(context);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      backgroundColor:const Color.fromARGB(255, 39, 55, 77),
+                    ),
+                  
+                    child: Text(
+                      "SIGN OUT",
+                      style: TextStyle(
+                        fontSize: 16,
+                        letterSpacing: 2.2,
+                        color: const Color.fromARGB(255, 241, 238, 238)
+                      ),
+                    ),
                   ),
-                  backgroundColor:const Color.fromARGB(255, 39, 55, 77),
-                ),
-              
-                child: Text(
-                "SIGN OUT",
-                style: TextStyle(
-                  fontSize: 16,
-                  letterSpacing: 2.2,
-                  color: const Color.fromARGB(255, 241, 238, 238)),
+                ],
               ),
-              ),
-              ],
-            ),
             ),
           ],
         ),

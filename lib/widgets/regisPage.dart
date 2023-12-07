@@ -67,12 +67,6 @@ class _RegisPageState extends State<RegisPage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); 
-
-                  // Navigator.of(context).pushReplacement(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => LoginPage(),
-                  //   ),
-                  // );
                 },
                 child: const Text('OK'),
               ),

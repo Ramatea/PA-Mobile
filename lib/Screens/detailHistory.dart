@@ -1,11 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:managment/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class detailHistory extends StatelessWidget {
   final String Id;
   final DateTime date;
-  final String amount;
+  final String  amount;
   final String category;
   final String explanation;
   final String itemType;
@@ -21,25 +23,62 @@ class detailHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Your History'),
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        children: [
-          Container(
-            width: 40,
-            child: Image.asset('images/$itemType.png'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: themeProvider.textColor,
           ),
-          Text('Order ID: $Id'),
-          Text('Date: $date'),
-          Text('Amount: $amount'),
-          Text('Category: $category'),
-          Text('Explanation: $explanation'),
-          Text('Item Type: $itemType'),
-        ],
+        ),
+        backgroundColor: Color.fromARGB(255, 100, 127, 148),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Card(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top : 10, bottom: 5, left: 16, right: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('Date: ${DateFormat('dd MMMM yyyy').format(date.toLocal())}'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Category            : $category'),
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Explanation       : $explanation'),
+              ),
+              Divider(),
+              ListTile(
+                 title: Text('Amount              : $amount'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

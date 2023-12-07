@@ -9,8 +9,7 @@ class auth {
       if (password != confirmPass) {
         throw 'Password dan confirm password tidak sesuai';
       }
-
-      // Pemeriksaan jika ada yg regis dengan email admin
+      
       if (email.toLowerCase() == 'admin@gmail.com') {
         throw 'Email sudah digunakan';
       }

@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/introduction_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:managment/data/model/manage.dart';
 import 'package:managment/firebase_options.dart';
 import 'package:managment/provider/theme_provider.dart';
 import 'package:managment/widgets/bottomnavigationbar.dart';
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (BuildContext context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (BuildContext context) => DataManage()),
       ],
       child: MaterialApp( 
         debugShowCheckedModeBanner: false, 
