@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:managment/Screens/add.dart';
 import 'package:managment/Screens/home.dart';
-import 'package:managment/Screens/profile.dart';
+import 'package:managment/Screens/profileAccount.dart';
 
 class Bottom extends StatefulWidget {
   const Bottom({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   int index_color = 0;
-  List Screen = [Home(), EditProfilePage(),];
+  List Screen = [Home(), profileAccountScreens(),];
 
 
   Stream<QuerySnapshot> fetchData(){
